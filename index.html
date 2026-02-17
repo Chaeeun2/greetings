@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Greetings — 연하장 아카이브</title>
+
+  <!-- SEO 기본 -->
+  <meta name="description" content="Greetings for New Year">
+  <meta name="keywords" content="연하장, 새해, 2026, 그래픽 디자인, 아카이브, 엽서, postcard, greetings">
+  <meta name="author" content="어랏 alot">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://greetings-postcards.web.app/">
+
+  <!-- Open Graph (Facebook, KakaoTalk 등) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Greetings — 연하장 아카이브">
+  <meta property="og:description" content="Greetings for New Year">
+  <meta property="og:url" content="https://greetings-postcards.web.app/">
+  <meta property="og:site_name" content="Greetings">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:image" content="https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/thumbnail.png">
+  <meta property="og:image:width" content="2398">
+  <meta property="og:image:height" content="1258">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Greetings — 연하장 아카이브">
+  <meta name="twitter:description" content="Greetings for New Year">
+  <meta name="twitter:image" content="https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/thumbnail.png">
+
+  <!-- 테마 컬러 -->
+  <meta name="theme-color" content="#e24545">
+  <meta name="msapplication-TileColor" content="#e24545">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://use.typekit.net/woq0xzc.css">
+  <link rel="stylesheet" as="style" crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+</head>
+
+<body>
+  <!-- 고정 UI -->
+  <header class="fixed-header">
+    <h1 class="logo">Greetings</h1>
+    <a href="#" class="about-link">About</a>
+  </header>
+
+  <div class="frame"></div>
+
+  <!-- 드래그 가능한 캔버스 -->
+  <div class="viewport">
+    <div class="canvas" id="canvas">
+      <!-- 카드들은 JS로 생성됩니다 -->
+    </div>
+  </div>
+
+  <!-- About 오버레이 -->
+  <div class="about-backdrop" id="aboutBackdrop"></div>
+  <div class="about-modal" id="aboutModal">
+    <h1 class="logo">Greetings</h1>
+    <div class="about-content">
+      <p>Greetings는 한해를 기쁘게 맞이하는 연하장을 아카이브한 프로젝트입니다. 디자이너들이 각기 다른 시각 언어로 표현한 2026년의 비주얼을 살펴보세요. 올 한해 기쁜 일만 가득하시기를 바랍니다.
+        <br><br>연하장은 <a href="https://forms.gle/tXR4fbA9hYumJCfRA" target="_blank">이곳</a>에서 제출해주세요.
+        <br><br>greetings는 <a href="https://alolot.kr" target="_blank">어랏</a>이 만들고 운영합니다. 수정, 삭제, 협업 문의는 <a
+          href="mailto:contact@alolot.kr">contact@alolot.kr</a>로 주세요.
+      </p>
+    </div>
+  </div>
+
+  <!-- 상세 보기 오버레이 -->
+  <div class="detail-backdrop" id="detailBackdrop"></div>
+  <div class="detail-scroll" id="detailScroll">
+    <div class="detail-scroll-inner" id="detailScrollInner"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
