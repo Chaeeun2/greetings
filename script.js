@@ -5,9 +5,9 @@
   const IS_MOBILE = window.innerWidth <= 768;
 
   // ===== 캔버스 설정 =====
-  const CARD_COLS = IS_MOBILE ? 3 : 6;
-  const BASE_W = IS_MOBILE ? 200 : 340;
-  const BASE_H = IS_MOBILE ? 250 : 420;
+  const CARD_COLS = IS_MOBILE ? 5 : 6;
+  const BASE_W = IS_MOBILE ? 150 : 340;
+  const BASE_H = IS_MOBILE ? 190 : 420;
   const GAP_X = IS_MOBILE ? 100 : 220;
   const GAP_Y = IS_MOBILE ? 80 : 180;
   const STAGGER_X = (BASE_W + GAP_X) / 2;
@@ -29,38 +29,10 @@
   // 카드 기준 면적 (원본 비율 유지, 세로/가로 이미지 시각적 크기 통일)
   const CARD_TARGET_AREA = BASE_W * BASE_H;
 
-  // ===== 엽서 데이터 =====
-  const postcards = [
-    { id: 1,  image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/Bbi%201.png',        author: 'Bbi',       instagram: '@isooplll',         instagramUrl: 'https://instagram.com/isooplll', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/Bbi%202.png'] },
-    { id: 2,  image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/eugene%201.webp',     author: 'eugene',    instagram: '@euxxgene_works',   instagramUrl: 'https://instagram.com/euxxgene_works', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/eugene%202.webp'] },
-    { id: 3,  image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/mana%201.png',        author: 'mana',      instagram: '@mana.webp',        instagramUrl: 'https://instagram.com/mana.webp', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/mana%202.png'] },
-    { id: 4,  image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/soi%201.jpg',         author: 'soi',       instagram: '@soiios.zz',        instagramUrl: 'https://instagram.com/soiios.zz', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/soi%202.jpg'] },
-    { id: 5,  image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/symsi.jpg',         author: 'symsi',     instagram: '@every.thing.is',   instagramUrl: 'https://instagram.com/every.thing.is' },
-    { id: 6,  image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/yyoung.jpg',        author: 'yyoung',    instagram: '@yyoung200',        instagramUrl: 'https://instagram.com/yyoung200' },
-    { id: 7,  image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/zooya%20kim%201.jpg',   author: 'zooya kim', instagram: '@zooya_kim',         instagramUrl: 'https://instagram.com/zooya_kim', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/zooya%20kim%202.jpg'] },
-    { id: 8,  image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%80%E1%85%AA%E1%86%A8%E1%84%8B%E1%85%A8%E1%84%85%E1%85%B5%E1%86%B7%201.jpg',       author: '곽예림',     instagram: '@kwakk.yr',          instagramUrl: 'https://instagram.com/kwakk.yr', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%80%E1%85%AA%E1%86%A8%E1%84%8B%E1%85%A8%E1%84%85%E1%85%B5%E1%86%B7%202.jpg'] },
-    { id: 9,  image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%80%E1%85%AE%E1%84%92%E1%85%A8%E1%84%85%E1%85%B5%E1%86%AB.jpg',          author: '구혜린',     instagram: '@cm369yk',           instagramUrl: 'https://instagram.com/cm369yk', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%80%E1%85%AE%E1%84%92%E1%85%A8%E1%84%85%E1%85%B5%E1%86%AB%202.jpg'] },
-    { id: 10, video: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%80%E1%85%B5%E1%86%B7%E1%84%8B%E1%85%A8%E1%84%80%E1%85%A7%E1%86%BC.mp4',          author: '김예경',     instagram: '@yewrks',            instagramUrl: 'https://instagram.com/yewrks' },
-    { id: 11, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%87%E1%85%A1%E1%84%85%E1%85%A1%E1%86%BC%201.png',         author: '바랑',       instagram: '@barang._.design_',  instagramUrl: 'https://instagram.com/barang._.design_', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%87%E1%85%A1%E1%84%85%E1%85%A1%E1%86%BC%202.png'] },
-    { id: 12, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%87%E1%85%A1%E1%86%A8%E1%84%87%E1%85%A6%E1%84%85%E1%85%B5%201.jpg',        author: '박베리',     instagram: '@bahkberry_x',       instagramUrl: 'https://instagram.com/bahkberry_x', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%87%E1%85%A1%E1%86%A8%E1%84%87%E1%85%A6%E1%84%85%E1%85%B5%202.png'] },
-    { id: 13, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%87%E1%85%A1%E1%86%BC%E1%84%8E%E1%85%A2%E1%84%8B%E1%85%A7%E1%86%AB%201.jpg',        author: '방채연',     instagram: '@_cha.archive.on',   instagramUrl: 'https://instagram.com/_cha.archive.on', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%87%E1%85%A1%E1%86%BC%E1%84%8E%E1%85%A2%E1%84%8B%E1%85%A7%E1%86%AB%202.jpg', 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%87%E1%85%A1%E1%86%BC%E1%84%8E%E1%85%A2%E1%84%8B%E1%85%A7%E1%86%AB%203.jpg', 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%87%E1%85%A1%E1%86%BC%E1%84%8E%E1%85%A2%E1%84%8B%E1%85%A7%E1%86%AB%204.jpg'] },
-    { id: 14, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%89%E1%85%B5%E1%84%82%E1%85%A1%E1%84%87%E1%85%B3.jpg',          author: '시나브',     instagram: '@airdrop_1122',      instagramUrl: 'https://instagram.com/airdrop_1122' },
-    { id: 15, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%89%E1%85%B5%E1%84%8B%E1%85%A9%201.jpg',         author: '시오',       instagram: '@seao_zip',          instagramUrl: 'https://instagram.com/seao_zip', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%89%E1%85%B5%E1%84%8B%E1%85%A9%202.jpg'] },
-    { id: 16, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%89%E1%85%B5%E1%86%AB%E1%84%92%E1%85%AA%E1%86%AB%E1%84%8C%E1%85%AE%E1%86%AB.png',          author: '신환준',     instagram: '@seenhzn',           instagramUrl: 'https://instagram.com/seenhzn' },
-    { id: 17, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A2%201.png',         author: '오재',       instagram: '@ojaeh.kr',          instagramUrl: 'https://instagram.com/ojaeh.kr', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%8B%E1%85%A9%E1%84%8C%E1%85%A2%202.png'] },
-    { id: 18, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%8B%E1%85%B2%E1%84%8B%E1%85%AF%E1%86%AB%201.jpg',         author: '유원',       instagram: '@_deeef3',           instagramUrl: 'https://instagram.com/_deeef3', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%8B%E1%85%B2%E1%84%8B%E1%85%AF%E1%86%AB%202.jpg'] },
-    { id: 19, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%8B%E1%85%B5%E1%84%8E%E1%85%A2%E1%84%92%E1%85%A7%E1%86%AB.jpg',          author: '이채현',     instagram: '',                   instagramUrl: '' },
-    { id: 20, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%8C%E1%85%A5%E1%86%BC%E1%84%92%E1%85%A7%E1%86%AB%E1%84%8C%E1%85%AE.jpg',          author: '정현주',     instagram: '@jujung.hyn',        instagramUrl: 'https://instagram.com/jujung.hyn' },
-    { id: 21, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%8E%E1%85%AC%E1%84%8B%E1%85%B5%E1%84%8B%E1%85%A1%E1%86%AB.jpg',          author: '최이안',     instagram: '@ianch0i',           instagramUrl: 'https://instagram.com/ianch0i' },
-    { id: 22, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%91%E1%85%B5%E1%84%91%E1%85%B5%201.png',         author: '피피',       instagram: '@peepi.kr',          instagramUrl: 'https://instagram.com/peepi.kr', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%91%E1%85%B5%E1%84%91%E1%85%B5%202.png'] },
-    { id: 23, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/%E1%84%92%E1%85%B4%E1%84%8B%E1%85%B2%E1%86%AB.png', author: '희윤', instagram: '@hyoonzine', instagramUrl: 'https://instagram.com/hyoonzine' },
-    { id: 24, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/chaewon.jpg',         author: '문채원',       instagram: '@whatinthe_zip',          instagramUrl: 'https://instagram.com/whatinthe_zip' },
-    { id: 25, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/seon.jpg', author: 'seon', instagram: '@seon.object', instagramUrl: 'https://instagram.com/hyoonzine' },
-    { id: 25, image: 'https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/alot.jpg',           author: '어랏',       instagram: '@alolot.kr',         instagramUrl: 'https://instagram.com/alolot.kr', extras: ['https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev/alot2.jpg'] },
-  ];
+  // postcards 데이터는 postcards.js에서 로드됩니다
 
   // ===== 원본 비율 기반 면적 균등 크기 계산 =====
-  const MAX_CARD_W = IS_MOBILE ? 280 : 480;
+  const MAX_CARD_W = IS_MOBILE ? 220 : 480;
 
   function calcSizeByArea(aspect) {
     // area = w * h, w = aspect * h → area = aspect * h² → h = sqrt(area / aspect)
