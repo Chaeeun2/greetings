@@ -133,8 +133,8 @@ body {
 }
 
 .postcard.is-visible:hover {
-  filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.12))
-    drop-shadow(0 8px 32px rgba(0, 0, 0, 0.08));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.12))
+    drop-shadow(0 8px 25px rgba(0, 0, 0, 0.08));
   transform: rotate(var(--rotation)) scale(1.03);
   z-index: 10;
 }
@@ -148,41 +148,15 @@ body {
   -webkit-user-drag: none;
 }
 
-/* 카드 내부 플레이스홀더 (이미지 없을 때) */
-.postcard .placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  color: #bbb;
-}
-
-/* SVG 카드 (인라인 일러스트용) */
-.postcard .card-art {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.postcard .card-art svg {
-  width: 100%;
-  height: 100%;
-}
-
 /* ===== 로딩 화면 ===== */
 .loading-overlay {
   position: fixed;
   inset: 0;
-  background: #e8e4df;
+  background: #f2f2f2;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 9999;
   transition: opacity 0.6s ease;
 }
 
@@ -191,22 +165,14 @@ body {
   pointer-events: none;
 }
 
-.loading-text {
-  font-family: Pretendard;
-  font-size: 18px;
-  color: black;
-  letter-spacing: 2px;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 1;
-  }
+.loading-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: #e24545;
+  transition: height 0.3s ease-out;
 }
 
 /* ===== About 모달 ===== */
@@ -312,8 +278,8 @@ body {
 /* 상세 보기 카드 (메인 + extras) */
 .detail-card {
   overflow: visible;
-  filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.12))
-    drop-shadow(0 8px 40px rgba(0, 0, 0, 0.08));
+  filter: drop-shadow(0 4px 15px rgba(0, 0, 0, 0.08))
+    drop-shadow(0 8px 30px rgba(0, 0, 0, 0.08));
 }
 
 .detail-card img,
@@ -424,8 +390,8 @@ body {
   }
 
   .detail-card {
-    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.1))
-      drop-shadow(0 4px 20px rgba(0, 0, 0, 0.06));
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0))
+      drop-shadow(0 4px 20px rgba(0, 0, 0, 0));
   }
 
   /* 터치 디바이스: hover 효과 비활성화 */

@@ -5,9 +5,9 @@
   const IS_MOBILE = window.innerWidth <= 768;
 
   // ===== 캔버스 설정 =====
-  const CARD_COLS = IS_MOBILE ? 5 : 6;
-  const BASE_W = IS_MOBILE ? 150 : 340;
-  const BASE_H = IS_MOBILE ? 190 : 420;
+  const CARD_COLS = IS_MOBILE ? 5 : 8;
+  const BASE_W = IS_MOBILE ? 150 : 280;
+  const BASE_H = IS_MOBILE ? 190 : 350;
   const GAP_X = IS_MOBILE ? 100 : 220;
   const GAP_Y = IS_MOBILE ? 80 : 180;
   const STAGGER_X = (BASE_W + GAP_X) / 2;
@@ -45,21 +45,31 @@
     return { w, h };
   }
 
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise(resolve => setTimeout(resolve, ms)),
+    ]);
+  }
+
   function loadMediaSize(card) {
-    return new Promise((resolve) => {
+    return withTimeout(new Promise((resolve) => {
       if (card.video) {
         const video = document.createElement('video');
+        video.preload = 'metadata';
         video.src = card.video;
-        video.addEventListener('loadedmetadata', () => {
-          const aspect = video.videoWidth / video.videoHeight;
-          Object.assign(card, calcSizeByArea(aspect));
+        const done = () => {
+          if (video.videoWidth && video.videoHeight) {
+            const aspect = video.videoWidth / video.videoHeight;
+            Object.assign(card, calcSizeByArea(aspect));
+          } else {
+            card.w = BASE_W;
+            card.h = BASE_H;
+          }
           resolve();
-        });
-        video.addEventListener('error', () => {
-          card.w = BASE_W;
-          card.h = BASE_H;
-          resolve();
-        });
+        };
+        video.addEventListener('loadedmetadata', done);
+        video.addEventListener('error', done);
       } else if (card.image) {
         const img = new Image();
         img.src = card.image;
@@ -78,180 +88,12 @@
         card.h = BASE_H;
         resolve();
       }
+    }), IS_MOBILE ? 3000 : 5000).then(() => {
+      if (!card.w || !card.h) {
+        card.w = BASE_W;
+        card.h = BASE_H;
+      }
     });
-  }
-
-  // ===== SVG 아트 생성 =====
-  function createCardArt(type, bg) {
-    const isDark = isColorDark(bg);
-    const stroke = isDark ? '#ffffff' : '#333333';
-    const accent = isDark ? '#ffcc66' : '#c0392b';
-
-    const arts = {
-      tree: `<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="50,10 20,50 80,50" fill="none" stroke="${stroke}" stroke-width="1.5"/>
-        <polygon points="50,30 15,75 85,75" fill="none" stroke="${stroke}" stroke-width="1.5"/>
-        <polygon points="50,50 10,100 90,100" fill="none" stroke="${stroke}" stroke-width="1.5"/>
-        <rect x="43" y="100" width="14" height="12" fill="none" stroke="${stroke}" stroke-width="1.5"/>
-        <circle cx="50" cy="10" r="3" fill="${accent}"/>
-      </svg>`,
-      abstract: `<svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="60" cy="50" r="30" fill="none" stroke="#e74c3c" stroke-width="1.5"/>
-        <path d="M30,50 Q60,10 90,50 Q60,90 30,50" fill="none" stroke="#3498db" stroke-width="1.2"/>
-        <line x1="20" y1="50" x2="100" y2="50" stroke="#ccc" stroke-width="0.5"/>
-        <circle cx="60" cy="50" r="5" fill="#e74c3c" opacity="0.3"/>
-      </svg>`,
-      snowflake: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <g transform="translate(50,50)" stroke="#6eabdb" stroke-width="1.2" fill="none">
-          ${[0,60,120,180,240,300].map(a => `<line x1="0" y1="0" x2="0" y2="-35" transform="rotate(${a})"/>
-            <line x1="0" y1="-20" x2="-8" y2="-28" transform="rotate(${a})"/>
-            <line x1="0" y1="-20" x2="8" y2="-28" transform="rotate(${a})"/>`).join('')}
-        </g>
-      </svg>`,
-      star: `<svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="60,5 72,40 110,40 78,60 88,95 60,72 32,95 42,60 10,40 48,40" fill="none" stroke="#e67e22" stroke-width="1.5"/>
-        <line x1="60" y1="0" x2="60" y2="100" stroke="#f39c12" stroke-width="0.3" opacity="0.5"/>
-        <circle cx="60" cy="5" r="8" fill="#e74c3c" opacity="0.2"/>
-      </svg>`,
-      ornament: `<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="50" cy="65" r="30" fill="none" stroke="${stroke}" stroke-width="1.5"/>
-        <rect x="45" y="30" width="10" height="8" rx="2" fill="none" stroke="${stroke}" stroke-width="1.2"/>
-        <path d="M50,28 Q55,20 50,15 Q45,20 50,28" fill="none" stroke="${stroke}" stroke-width="1"/>
-        <ellipse cx="50" cy="65" rx="20" ry="10" fill="none" stroke="${stroke}" stroke-width="0.5" opacity="0.5"/>
-      </svg>`,
-      dance: `<svg viewBox="0 0 90 130" xmlns="http://www.w3.org/2000/svg">
-        ${[0,1,2,3,4].map(i => {
-          const x = 15 + i * 15;
-          return `<circle cx="${x}" cy="${40 + Math.sin(i)*10}" r="4" fill="none" stroke="${stroke}" stroke-width="1"/>
-            <line x1="${x}" y1="${44 + Math.sin(i)*10}" x2="${x}" y2="${70 + Math.sin(i)*10}" stroke="${stroke}" stroke-width="1"/>
-            <line x1="${x-8}" y1="${55 + Math.sin(i)*10}" x2="${x+8}" y2="${55 + Math.cos(i)*8}" stroke="${stroke}" stroke-width="1"/>
-            <line x1="${x}" y1="${70 + Math.sin(i)*10}" x2="${x-6}" y2="${90 + Math.sin(i)*10}" stroke="${stroke}" stroke-width="1"/>
-            <line x1="${x}" y1="${70 + Math.sin(i)*10}" x2="${x+6}" y2="${90 + Math.cos(i)*10}" stroke="${stroke}" stroke-width="1"/>`;
-        }).join('')}
-      </svg>`,
-      house: `<svg viewBox="0 0 110 140" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="55,15 15,55 95,55" fill="none" stroke="${stroke}" stroke-width="1"/>
-        <rect x="20" y="55" width="70" height="60" fill="none" stroke="${stroke}" stroke-width="1"/>
-        <rect x="42" y="85" width="16" height="30" fill="none" stroke="${stroke}" stroke-width="1"/>
-        <rect x="28" y="65" width="12" height="12" fill="none" stroke="${stroke}" stroke-width="0.8"/>
-        <rect x="65" y="65" width="12" height="12" fill="none" stroke="${stroke}" stroke-width="0.8"/>
-        ${[0,1,2,3,4,5].map(i => `<circle cx="${20+i*16}" cy="${10+Math.random()*5}" r="1" fill="${stroke}" opacity="0.6"/>`).join('')}
-      </svg>`,
-      holly: `<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
-        <path d="M50,20 Q30,50 40,80 Q45,90 50,110" fill="none" stroke="#2d5a27" stroke-width="2"/>
-        <ellipse cx="40" cy="50" rx="18" ry="28" fill="none" stroke="#2d5a27" stroke-width="1.2" transform="rotate(-15,40,50)"/>
-        <ellipse cx="62" cy="55" rx="18" ry="28" fill="none" stroke="#2d5a27" stroke-width="1.2" transform="rotate(15,62,55)"/>
-        <circle cx="50" cy="35" r="5" fill="#c0392b"/>
-        <circle cx="56" cy="30" r="4" fill="#e74c3c"/>
-        <circle cx="44" cy="32" r="3.5" fill="#a93226"/>
-      </svg>`,
-      wreath: `<svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="60" cy="50" r="32" fill="none" stroke="#5d7a3a" stroke-width="3"/>
-        ${[0,30,60,90,120,150,180,210,240,270,300,330].map(a => {
-          const rad = a * Math.PI / 180;
-          const x = 60 + 32 * Math.cos(rad);
-          const y = 50 + 32 * Math.sin(rad);
-          return `<circle cx="${x}" cy="${y}" r="${a%60===0 ? 3 : 2}" fill="${a%60===0 ? '#c0392b' : '#6b8e3a'}"/>`;
-        }).join('')}
-        <text x="60" y="54" text-anchor="middle" font-size="8" font-family="serif" fill="#333" letter-spacing="1">MERRY</text>
-        <text x="60" y="64" text-anchor="middle" font-size="7" font-family="serif" fill="#333" letter-spacing="1">CHRISTMAS</text>
-      </svg>`,
-      pine: `<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="50,10 30,40 70,40" fill="#2d5a27" opacity="0.8"/>
-        <polygon points="50,25 25,60 75,60" fill="#2d5a27" opacity="0.7"/>
-        <polygon points="50,40 20,80 80,80" fill="#2d5a27" opacity="0.6"/>
-        <polygon points="50,55 15,100 85,100" fill="#2d5a27" opacity="0.5"/>
-        <rect x="44" y="100" width="12" height="15" fill="#5d4037"/>
-        <circle cx="50" cy="10" r="4" fill="#ffd700"/>
-      </svg>`,
-      candle: `<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-        <rect x="40" y="45" width="20" height="55" fill="none" stroke="${stroke}" stroke-width="1.5" rx="2"/>
-        <ellipse cx="50" cy="45" rx="10" ry="3" fill="none" stroke="${stroke}" stroke-width="1"/>
-        <line x1="50" y1="45" x2="50" y2="30" stroke="${stroke}" stroke-width="1"/>
-        <ellipse cx="50" cy="25" rx="5" ry="8" fill="none" stroke="#e67e22" stroke-width="1">
-          <animate attributeName="ry" values="8;6;8" dur="2s" repeatCount="indefinite"/>
-        </ellipse>
-        <circle cx="50" cy="22" r="2" fill="#f39c12" opacity="0.8">
-          <animate attributeName="opacity" values="0.8;0.4;0.8" dur="1.5s" repeatCount="indefinite"/>
-        </circle>
-      </svg>`,
-      gift: `<svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
-        <rect x="25" y="40" width="70" height="45" fill="none" stroke="${stroke}" stroke-width="1.5" rx="2"/>
-        <rect x="20" y="30" width="80" height="15" fill="none" stroke="${stroke}" stroke-width="1.5" rx="2"/>
-        <line x1="60" y1="30" x2="60" y2="85" stroke="#c0392b" stroke-width="2"/>
-        <line x1="20" y1="38" x2="100" y2="38" stroke="#c0392b" stroke-width="2"/>
-        <path d="M60,30 Q50,15 40,25" fill="none" stroke="#c0392b" stroke-width="1.5"/>
-        <path d="M60,30 Q70,15 80,25" fill="none" stroke="#c0392b" stroke-width="1.5"/>
-      </svg>`,
-      bell: `<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">
-        <path d="M30,70 Q30,30 50,25 Q70,30 70,70" fill="none" stroke="${stroke}" stroke-width="1.5"/>
-        <line x1="25" y1="70" x2="75" y2="70" stroke="${stroke}" stroke-width="1.5"/>
-        <circle cx="50" cy="78" r="6" fill="none" stroke="${stroke}" stroke-width="1.2"/>
-        <line x1="50" y1="25" x2="50" y2="15" stroke="${stroke}" stroke-width="1.2"/>
-        <circle cx="50" cy="13" r="3" fill="none" stroke="${stroke}" stroke-width="1"/>
-        <path d="M35,70 Q35,80 25,85" fill="none" stroke="${stroke}" stroke-width="0.8" opacity="0.5"/>
-        <path d="M65,70 Q65,80 75,85" fill="none" stroke="${stroke}" stroke-width="0.8" opacity="0.5"/>
-      </svg>`,
-      snow: `<svg viewBox="0 0 130 100" xmlns="http://www.w3.org/2000/svg">
-        <rect x="10" y="60" width="110" height="3" fill="${stroke}" opacity="0.2" rx="1"/>
-        ${Array.from({length: 25}, (_, i) => {
-          const x = 10 + Math.random() * 110;
-          const y = 10 + Math.random() * 50;
-          const r = 1 + Math.random() * 2;
-          return `<circle cx="${x}" cy="${y}" r="${r}" fill="${stroke}" opacity="${0.2 + Math.random() * 0.5}"/>`;
-        }).join('')}
-      </svg>`,
-      heart: `<svg viewBox="0 0 95 120" xmlns="http://www.w3.org/2000/svg">
-        <path d="M47.5,35 C47.5,25 35,15 25,25 C15,35 15,50 47.5,80 C80,50 80,35 70,25 C60,15 47.5,25 47.5,35Z" fill="none" stroke="#e74c3c" stroke-width="1.5"/>
-        <path d="M47.5,45 C47.5,40 42,35 37,40 C32,45 32,50 47.5,65 C63,50 63,45 58,40 C53,35 47.5,40 47.5,45Z" fill="#e74c3c" opacity="0.15"/>
-      </svg>`,
-      letter: `<svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg">
-        <rect x="15" y="25" width="90" height="55" fill="none" stroke="${stroke}" stroke-width="1.2" rx="2"/>
-        <polyline points="15,25 60,58 105,25" fill="none" stroke="${stroke}" stroke-width="1.2"/>
-        <line x1="15" y1="80" x2="40" y2="58" stroke="${stroke}" stroke-width="0.6" opacity="0.4"/>
-        <line x1="105" y1="80" x2="80" y2="58" stroke="${stroke}" stroke-width="0.6" opacity="0.4"/>
-      </svg>`,
-      moon: `<svg viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">
-        <path d="M60,30 A25,25 0 1,0 60,80 A18,18 0 1,1 60,30" fill="none" stroke="${stroke}" stroke-width="1.5"/>
-        ${Array.from({length: 12}, (_, i) => {
-          const x = 15 + Math.random() * 70;
-          const y = 15 + Math.random() * 100;
-          return `<circle cx="${x}" cy="${y}" r="${0.5 + Math.random()}" fill="${stroke}" opacity="${0.3 + Math.random() * 0.5}"/>`;
-        }).join('')}
-      </svg>`,
-      ribbon: `<svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
-        <path d="M50,20 Q30,40 50,55 Q70,40 50,20" fill="none" stroke="#c0392b" stroke-width="1.5"/>
-        <path d="M50,55 Q35,70 25,90" fill="none" stroke="#c0392b" stroke-width="1.5"/>
-        <path d="M50,55 Q65,70 75,90" fill="none" stroke="#c0392b" stroke-width="1.5"/>
-        <path d="M50,55 L50,95" fill="none" stroke="#c0392b" stroke-width="1"/>
-      </svg>`,
-      mistletoe: `<svg viewBox="0 0 110 120" xmlns="http://www.w3.org/2000/svg">
-        <line x1="55" y1="10" x2="55" y2="50" stroke="#5d7a3a" stroke-width="1.5"/>
-        <ellipse cx="40" cy="40" rx="15" ry="22" fill="none" stroke="#5d7a3a" stroke-width="1" transform="rotate(-10,40,40)"/>
-        <ellipse cx="70" cy="40" rx="15" ry="22" fill="none" stroke="#5d7a3a" stroke-width="1" transform="rotate(10,70,40)"/>
-        <ellipse cx="55" cy="50" rx="15" ry="25" fill="none" stroke="#5d7a3a" stroke-width="1"/>
-        <circle cx="55" cy="80" r="3" fill="#fff"/>
-        <circle cx="50" cy="76" r="2.5" fill="#fff"/>
-        <circle cx="60" cy="77" r="2.5" fill="#fff"/>
-      </svg>`,
-      cookie: `<svg viewBox="0 0 105 105" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="52" cy="52" r="35" fill="none" stroke="#d4a050" stroke-width="2"/>
-        <circle cx="42" cy="40" r="4" fill="#5d3a1a" opacity="0.7"/>
-        <circle cx="60" cy="45" r="3.5" fill="#5d3a1a" opacity="0.7"/>
-        <circle cx="48" cy="60" r="4" fill="#5d3a1a" opacity="0.7"/>
-        <circle cx="65" cy="62" r="3" fill="#5d3a1a" opacity="0.7"/>
-        <circle cx="38" cy="55" r="2.5" fill="#5d3a1a" opacity="0.5"/>
-      </svg>`,
-    };
-
-    return arts[type] || arts.tree;
-  }
-
-  function isColorDark(hex) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return (r * 299 + g * 587 + b * 114) / 1000 < 128;
   }
 
   // ===== 카드 배치 (셔플 + 엇갈린 벽돌 + 랜덤 jitter) =====
@@ -373,16 +215,16 @@
       const vw = window.innerWidth;
       const vh = window.innerHeight;
       const isMobile = vw <= 768;
-      const maxH = vh * (isMobile ? 0.6 : 0.75);
-      const maxW = vw * (isMobile ? 0.88 : 0.6);
+      const maxH = vh * (isMobile ? 0.8 : 0.8);
+      const maxW = vw * (isMobile ? 0.85 : 0.5);
       const aspect = card.w / card.h;
       let tw, th;
       if (card.h > card.w) {
-        th = Math.min(maxH, card.h * 1.8);
+        th = maxH;
         tw = th * aspect;
         if (tw > maxW) { tw = maxW; th = tw / aspect; }
       } else {
-        tw = Math.min(maxW, card.w * 1.8);
+        tw = maxW;
         th = tw / aspect;
         if (th > maxH) { th = maxH; tw = th * aspect; }
       }
@@ -436,7 +278,7 @@
       const hasExtras = card.extras && card.extras.length > 0;
       const isMobile = vw <= 768;
       const cardGap = isMobile ? 30 : 60;
-      const cardStartY = isMobile ? 90 : 60;
+      const cardStartY = isMobile ? 90 : 80;
       const leftPos = (vw - tw) / 2;
 
       inner.innerHTML = '';
@@ -519,7 +361,7 @@
       const hasExtras = card.extras && card.extras.length > 0;
       const { tw, th } = calcTargetSize(card);
       const isMobile = window.innerWidth <= 768;
-      const cardStartY = isMobile ? 90 : 60;
+      const cardStartY = isMobile ? 90 : 90;
 
       // extras를 메인 카드 위치로 다시 접기
       const extras = inner.querySelectorAll('.detail-card:not(.main-card)');
@@ -724,9 +566,45 @@
     });
   }
 
+  // ===== 이미지 프리로드 + 진행률 =====
+  function preloadMainImages(cards, onProgress) {
+    const srcs = [];
+    cards.forEach(card => {
+      if (card.image) srcs.push(card.image);
+    });
+
+    let loaded = 0;
+    const total = srcs.length;
+    const perItemTimeout = IS_MOBILE ? 4000 : 6000;
+
+    return Promise.all(srcs.map(src => withTimeout(new Promise(resolve => {
+      const img = new Image();
+      img.src = src;
+      img.onload = img.onerror = () => {
+        loaded++;
+        onProgress(loaded / total);
+        resolve();
+      };
+    }), perItemTimeout).then(() => {
+      if (loaded < total) {
+        loaded++;
+        onProgress(loaded / total);
+      }
+    })));
+  }
+
   // ===== 초기화 =====
   async function init() {
-    await Promise.all(postcards.map(loadMediaSize));
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const loadingFill = document.getElementById('loadingFill');
+
+    // 미디어 사이즈 계산 + 메인 이미지만 프리로드
+    const sizePromise = Promise.all(postcards.map(loadMediaSize));
+    const preloadPromise = preloadMainImages(postcards, (progress) => {
+      loadingFill.style.height = `${Math.round(progress * 100)}%`;
+    });
+
+    await Promise.all([sizePromise, preloadPromise]);
 
     const { w: cw, h: ch } = calcCanvasSize(postcards.length);
     CANVAS_WIDTH = cw;
@@ -743,6 +621,13 @@
 
     const viewport = document.querySelector('.viewport');
     initDrag(viewport, canvas);
+
+    // 로딩 화면 제거
+    loadingFill.style.height = '100%';
+    setTimeout(() => {
+      loadingOverlay.classList.add('hidden');
+      setTimeout(() => loadingOverlay.remove(), 600);
+    }, 400);
 
     // About 모달
     const aboutBackdrop = document.getElementById('aboutBackdrop');
