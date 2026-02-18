@@ -470,10 +470,10 @@ const postcards = [
     author: 'onzi',
     instagram: '@hjworksarchive',
     instagramUrl: 'https://instagram.com/hjworksarchive',
-    image: `${CDN}/hjworksarchive_1.png`,
+    image: `${CDN}/hjworksarchive_2.png`,
     extras: [
-      `${CDN}/hjworksarchive_2.png`,
       `${CDN}/hjworksarchive_3.png`,
+      `${CDN}/hjworksarchive_1.png`,
     ],
   },
   {
@@ -508,9 +508,9 @@ const postcards = [
     author: 'mona',
     instagram: '@monauzys',
     instagramUrl: 'https://instagram.com/monauzys',
-    image: `${CDN}/monauzys_1.png`,
+    image: `${CDN}/monauzys_1.jpg`,
     extras: [
-      `${CDN}/monauzys_2.png`,
+      `${CDN}/monauzys_2.jpg`,
     ],
   },
   {
@@ -518,9 +518,10 @@ const postcards = [
     author: '이예원',
     instagram: '@nowey.works',
     instagramUrl: 'https://instagram.com/nowey.works',
-    image: `${CDN}/monauzys_1.jpg`,
+    video: `${CDN}/noweyworks_1.mp4`,
     extras: [
-      `${CDN}/monauzys_2.jpg`,
+      `${CDN}/noweyworks_2.png`,
+      `${CDN}/noweyworks_3.png`,
     ],
   },
   {
