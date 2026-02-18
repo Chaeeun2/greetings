@@ -143,7 +143,7 @@ body {
 .postcard video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   pointer-events: none;
   -webkit-user-drag: none;
 }
@@ -286,7 +286,7 @@ body {
 .detail-card video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   -webkit-user-drag: none;
   pointer-events: none;
 }
