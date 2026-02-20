@@ -1,0 +1,13 @@
+name = "greetings-upload"
+main = "index.js"
+compatibility_date = "2024-01-01"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "greetings"  # TODO: 실제 R2 버킷 이름으로 변경
+
+[vars]
+PUBLIC_BUCKET_URL = "https://pub-0e3520b4da7b4fd383674dd5e967ed42.r2.dev"
+
+# UPLOAD_SECRET은 wrangler secret으로 관리:
+#   wrangler secret put UPLOAD_SECRET
