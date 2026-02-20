@@ -1,4 +1,4 @@
-const MAX_IMAGE_BYTES = 2 * 1024 * 1024;   // 2 MB
+const MAX_IMAGE_BYTES = 3 * 1024 * 1024;   // 3 MB
 const MAX_VIDEO_BYTES = 10 * 1024 * 1024;  // 10 MB
 const ALLOWED_TYPES = new Set([
   'image/jpeg', 'image/png', 'image/webp',
