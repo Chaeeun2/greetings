@@ -5,7 +5,11 @@
       "firebase.json",
       ".firebase",
       ".firebaserc",
-      "**/node_modules/**"
+      "**/node_modules/**",
+      "firestore.rules"
     ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
   }
 }

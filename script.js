@@ -29,7 +29,18 @@
   // 카드 기준 면적 (원본 비율 유지, 세로/가로 이미지 시각적 크기 통일)
   const CARD_TARGET_AREA = BASE_W * BASE_H;
 
-  // postcards 데이터는 postcards.js에서 로드됩니다
+  // Firestore에서 엽서 데이터 로드 (실패 시 postcards.js 폴백)
+  async function loadPostcardsFromFirestore() {
+    try {
+      if (typeof db === 'undefined') throw new Error('Firebase not initialized');
+      const snapshot = await db.collection('postcards').orderBy('order', 'asc').get();
+      if (snapshot.empty) throw new Error('No data in Firestore');
+      return snapshot.docs.map(doc => ({ firestoreId: doc.id, ...doc.data() }));
+    } catch (e) {
+      console.warn('Firestore 로드 실패, static 데이터 사용:', e.message);
+      return typeof postcards !== 'undefined' ? postcards : [];
+    }
+  }
 
   // ===== 원본 비율 기반 면적 균등 크기 계산 =====
   const MAX_CARD_W = IS_MOBILE ? 220 : 480;
@@ -589,13 +600,16 @@
     const loadingOverlay = document.getElementById('loadingOverlay');
     const loadingFill = document.getElementById('loadingFill');
 
+    // Firestore에서 데이터 로드 (실패 시 static 폴백)
+    const cardData = await loadPostcardsFromFirestore();
+
     // 비디오 사이즈 계산 (병렬)
-    const videoCards = postcards.filter(c => c.video);
+    const videoCards = cardData.filter(c => c.video);
     const videoPromise = Promise.all(videoCards.map(loadMediaSize));
 
     // 이미지 프리로드 + 사이즈 계산 (통합, 글로벌 타임아웃)
     const globalTimeout = IS_MOBILE ? 10000 : 15000;
-    const preloadPromise = preloadAndMeasure(postcards, (progress) => {
+    const preloadPromise = preloadAndMeasure(cardData, (progress) => {
       loadingFill.style.height = `${Math.round(progress * 100)}%`;
     });
 
@@ -605,14 +619,14 @@
     ]);
 
     // 타임아웃으로 사이즈가 없는 카드에 폴백 적용
-    postcards.forEach(card => {
+    cardData.forEach(card => {
       if (!card.w || !card.h) {
         card.w = BASE_W;
         card.h = BASE_H;
       }
     });
 
-    const { w: cw, h: ch } = calcCanvasSize(postcards.length);
+    const { w: cw, h: ch } = calcCanvasSize(cardData.length);
     CANVAS_WIDTH = cw;
     CANVAS_HEIGHT = ch;
 
@@ -620,7 +634,7 @@
     canvas.style.width = `${CANVAS_WIDTH}px`;
     canvas.style.height = `${CANVAS_HEIGHT}px`;
 
-    const laid = layoutCards(postcards);
+    const laid = layoutCards(cardData);
     renderCards(canvas, laid);
 
     detailAPI = initDetail();

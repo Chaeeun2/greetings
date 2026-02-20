@@ -1,0 +1,10 @@
+node_modules/
+
+# 민감한 설정 파일
+admin/config.js
+upload/config.js
+firebase-config.js
+
+# Cloudflare Worker
+worker/node_modules/
+worker/.wrangler/
