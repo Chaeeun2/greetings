@@ -448,9 +448,9 @@ const postcards = [
   },
   {
     id: 57,
-    author: 'BON',
-    instagram: '@b0n.bogi',
-    instagramUrl: 'https://instagram.com/b0n.bogi',
+    author: '콜로니',
+    instagram: '@to.colony',
+    instagramUrl: 'https://instagram.com/to.colony',
     image: `${CDN}/b0nbogi_1.jpg`,
     extras: [
       `${CDN}/b0nbogi_2.jpg`,
@@ -460,9 +460,9 @@ const postcards = [
   },
   {
     id: 58,
-    author: '콜로니',
-    instagram: '@to.colony',
-    instagramUrl: 'https://instagram.com/to.colony',
+    author: 'BON',
+    instagram: '@b0n.bogi',
+    instagramUrl: 'https://instagram.com/b0n.bogi',
     image: `${CDN}/tocolony.jpg`,
   },
   {
@@ -571,5 +571,32 @@ const postcards = [
     instagram: '@kmusein',
     instagramUrl: 'https://instagram.com/kmusein',
     image: `${CDN}/kmusein.jpg`,
+  },
+  {
+    id: 68,
+    author: '김효빈',
+    instagram: '@kimyobin_',
+    instagramUrl: 'https://instagram.com/kimyobin_',
+    image: `${CDN}/kimyobin_.jpg`,
+  },
+    {
+    id: 69,
+    author: '정세아',
+    instagram: '@say__aaahhh',
+    instagramUrl: 'https://instagram.com/say__aaahhh',
+    image: `${CDN}/say__aaahhh_1.png`,
+    extras: [
+      `${CDN}/say__aaahhh_2.png`,
+    ],
+  },
+        {
+    id: 70,
+    author: '아른',
+    instagram: '@areun_030',
+    instagramUrl: 'https://instagram.com/areun_030',
+    image: `${CDN}/areun_030_1.jpg`,
+    extras: [
+      `${CDN}/areun_030_2.jpg`,
+    ],
   },
 ];

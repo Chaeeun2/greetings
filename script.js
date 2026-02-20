@@ -552,47 +552,36 @@
     });
   }
 
-  // ===== 이미지 프리로드 + 진행률 =====
+  // ===== 이미지 프리로드 + 사이즈 계산 =====
   function preloadAndMeasure(cards, onProgress) {
     let loaded = 0;
     const total = cards.length;
-    const perItemTimeout = IS_MOBILE ? 4000 : 6000;
 
-    return Promise.all(cards.map(card => {
+    function tick() {
+      loaded++;
+      onProgress(Math.min(loaded / total, 1));
+    }
+
+    return Promise.all(cards.map(card => new Promise(resolve => {
       if (card.video) {
-        loaded++;
-        onProgress(loaded / total);
-        return Promise.resolve();
+        tick();
+        resolve();
+        return;
       }
 
-      return withTimeout(new Promise(resolve => {
-        const img = new Image();
-        img.src = card.image;
-        img.onload = () => {
-          const aspect = img.naturalWidth / img.naturalHeight;
-          Object.assign(card, calcSizeByArea(aspect));
-          loaded++;
-          onProgress(loaded / total);
-          resolve();
-        };
-        img.onerror = () => {
-          card.w = BASE_W;
-          card.h = BASE_H;
-          loaded++;
-          onProgress(loaded / total);
-          resolve();
-        };
-      }), perItemTimeout).then(() => {
-        if (!card.w || !card.h) {
-          card.w = BASE_W;
-          card.h = BASE_H;
-        }
-        if (loaded < total) {
-          loaded++;
-          onProgress(loaded / total);
-        }
-      });
-    }));
+      const img = new Image();
+      img.src = card.image;
+      img.onload = () => {
+        const aspect = img.naturalWidth / img.naturalHeight;
+        Object.assign(card, calcSizeByArea(aspect));
+        tick();
+        resolve();
+      };
+      img.onerror = () => {
+        tick();
+        resolve();
+      };
+    })));
   }
 
   // ===== 초기화 =====
@@ -604,12 +593,24 @@
     const videoCards = postcards.filter(c => c.video);
     const videoPromise = Promise.all(videoCards.map(loadMediaSize));
 
-    // 이미지 프리로드 + 사이즈 계산 (통합)
+    // 이미지 프리로드 + 사이즈 계산 (통합, 글로벌 타임아웃)
+    const globalTimeout = IS_MOBILE ? 10000 : 15000;
     const preloadPromise = preloadAndMeasure(postcards, (progress) => {
       loadingFill.style.height = `${Math.round(progress * 100)}%`;
     });
 
-    await Promise.all([videoPromise, preloadPromise]);
+    await Promise.race([
+      Promise.all([videoPromise, preloadPromise]),
+      new Promise(resolve => setTimeout(resolve, globalTimeout)),
+    ]);
+
+    // 타임아웃으로 사이즈가 없는 카드에 폴백 적용
+    postcards.forEach(card => {
+      if (!card.w || !card.h) {
+        card.w = BASE_W;
+        card.h = BASE_H;
+      }
+    });
 
     const { w: cw, h: ch } = calcCanvasSize(postcards.length);
     CANVAS_WIDTH = cw;
